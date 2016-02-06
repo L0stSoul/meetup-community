@@ -1,13 +1,17 @@
 let Promise = require('bluebird');
 let _ = require('lodash');
 
-function getPathByName(ctrlName) {
-  return _.snakeCase(ctrlName.replace(/Ctrl$/, '').replace(/Controller$/, ''));
+function getPathByName(ctrl) {
+  return _.snakeCase(getControllerName(ctrl));
 }
 
 function getParamNames(fn) {
   var funStr = fn.toString();
   return funStr.slice(funStr.indexOf('(') + 1, funStr.indexOf(')')).match(/([^\s,]+)/g);
+}
+
+function getControllerName(ctrl) {
+  return ctrl.name.replace(/Ctrl$/, '').replace(/Controller$/, '');
 }
 
 let moduleName = 'express-api-generator';
@@ -94,11 +98,11 @@ class Router {
         throw log.error('method not found', { method: route.method });
       }
 
-      log.info('route', route.method + ':' + route.url, '->', route.controller.name + '.' + route.handler + '(' + route.args.join(',') + ')');
+      log.info('route', route.method + ':' + route.url, '->', route.ctrl.name + '.' + route.handler + '(' + route.args.join(',') + ')');
 
       app[route.method](route.url, (req, res) => {
-        let ctrl = new route.controller(req, res);
-        let args = this._collectArgs(req, route.method, args);
+        let ctrl = new route.ctrl(req, res);
+        let args = this._collectArgs(req, route.method, route.args);
 
         Promise.resolve()
           .then( () => {
@@ -124,7 +128,7 @@ class Router {
     let { ctrls, routes, defaults } = this;
 
     for (let ctrl of ctrls) {
-      let path = getPathByName(ctrl.name);
+      let path = getPathByName(ctrl);
 
       if (typeof(ctrl) !== 'function') {
         throw log.error('controller is not a constructor', ctrl);
@@ -149,7 +153,8 @@ class Router {
         let route = {
           url: defaults.pathPrefix + path,
           args: getParamNames(handler) || [],
-          controller: ctrl,
+          ctrl: ctrl,
+          ctrlName: getControllerName(ctrl),
           handler: method
         };
 
