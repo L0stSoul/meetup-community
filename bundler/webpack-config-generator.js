@@ -69,7 +69,7 @@ export default function(appConfig, publicAppConfig = {}) {
       ? [
       new ExtractTextPlugin("bundle.css"),
       new Webpack.optimize.UglifyJsPlugin({ minimize: true }),
-      new StatsPlugin(path.join(__dirname, 'stats.json'), { chunkModules: true }),
+      new StatsPlugin('stats.json', { chunkModules: true })
     ] : [
       new Webpack.HotModuleReplacementPlugin(),
     ]),
