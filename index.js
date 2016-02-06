@@ -1,6 +1,6 @@
 import Bundler from './bundler';
 import yargs from 'yargs';
-import Config from './config.default';
+import Config from './config';
 import Server from './backend/server';
 import Logger from './backend/logger';
 
