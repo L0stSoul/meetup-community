@@ -11,6 +11,7 @@ export default class Config {
     this.port = port;
     this.ssl = ssl;
     this.url = `http${(ssl ? 's' : '')}://${host}${(mode === 'production' ? '' : ':' + port)}/`;
+    this.title = 'Meetups';
 
     if (!isPublic) {
       this.paths = {

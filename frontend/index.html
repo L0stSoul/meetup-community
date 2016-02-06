@@ -16,7 +16,16 @@
 <body>
 <base href="/">
 
-<div class="app-container">
+<div block="navbar">
+  <div class="container">
+    <div elem="title" ng-bind="::$config.title"></div>
+    <div block="nav-menu">
+      <a elem="link"></a>
+    </div>
+  </div>
+</div>
+
+<div class="section">
   <div ui-view autoscroll="true"></div>
 </div>
 
