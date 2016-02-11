@@ -1,6 +1,6 @@
 import Bundler from './bundler';
 import yargs from 'yargs';
-import Config from './config';
+import Config from './config.default.js';
 import Server from './backend/server';
 import Logger from './backend/logger';
 

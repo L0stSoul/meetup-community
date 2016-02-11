@@ -4,6 +4,7 @@ import Logger from './logger';
 import fs from 'fs';
 import ApiGenerator from './vendor/express-api-generator';
 import EventsCtrl from './controllers/events.js';
+import DocsCtrl from './controllers/docs.js';
 
 let log;
 
@@ -22,7 +23,7 @@ export default class Server {
   routes() {
     this.instance.use(express.static(this.config.paths.public));
 
-    let api = new ApiGenerator([EventsCtrl], { Logger });
+    let api = new ApiGenerator([EventsCtrl, DocsCtrl], { Logger });
 
     api.bind(this.instance);
   }
@@ -35,7 +36,7 @@ export default class Server {
 
   run() {
     return new Promise( (resolve, reject) => {
-      this.instance.listen(this.config.port, (err) => {
+      this.instance.listen(process.env.PORT || 8080, (err) => {
         if (err) {
           return reject(err);
         }

@@ -98,11 +98,18 @@ class Router {
         throw log.error('method not found', { method: route.method });
       }
 
-      log.info('route', route.method + ':' + route.url, '->', route.ctrl.name + '.' + route.handler + '(' + route.args.join(',') + ')');
+      this._logRoute(route);
 
-      app[route.method](route.url, (req, res) => {
-        let ctrl = new route.ctrl(req, res);
-        let args = this._collectArgs(req, route.method, route.args);
+      route.ctrl.middleware ?
+        app[route.method](route.url, route.ctrl.middleware(), (req, res) => this._handleRoute(route, req, res)) :
+        app[route.method](route.url, (req, res) => this._handleRoute(route, req, res));
+     });
+  }
+
+  _handleRoute(route, req, res) {
+
+      let ctrl = new route.ctrl(req, res);
+      let args = this._collectArgs(req, route.method, route.args);
 
         Promise.resolve()
           .then( () => {
@@ -120,8 +127,10 @@ class Router {
           .then( answer => {
             res.json(answer);
           });
-      });
-    });
+  }
+
+  _logRoute(route) {
+      log.info('route', route.method + ':' + route.url, '->', route.ctrl.name + '.' + route.handler + '(' + route.args.join(',') + ')');
   }
 
   _generateConfig() {
@@ -178,11 +187,7 @@ class Router {
         return req.params.id;
       }
 
-      if (method === 'get') {
-        return req.query[name];
-      } else {
-        return req.body[name];
-      }
+      return req.query[name] || req.body[name];
     });
   }
 
